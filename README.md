@@ -1,6 +1,7 @@
 # Web-based-Dashboard-for-COVID-19-Twitter-Sentiment-Analysis
 
 Category: Artificial Intelligence
+
 Skills Required:
 Tone Analyzer,Node- RED
 
@@ -21,10 +22,10 @@ sentiment and emotional tone.
 Tweets and metadata are stored in Cloudant
 The Web UI displays charts and graphs.
 
-<p align="center">
-    <img src="https://cloud.ibm.com/media/docs/developer-appservice/resources/ibm-cloud.svg" height="100" alt="IBM Cloud">    
-</p>
+<div align="center">
+    <img src="https://github.com/SmartPracticeschool/SPS-5824-Web-based-Dashboard-for-COVID-19-Twitter-Sentiment-Analysis/blob/main/Screenshot%20(25).png" height="500" alt="IBM Sentiment Analysis">    
 
+</div>
 
 
 
