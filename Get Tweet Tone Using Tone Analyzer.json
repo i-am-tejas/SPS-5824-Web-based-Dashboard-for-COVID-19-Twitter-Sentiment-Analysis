@@ -1,0 +1,455 @@
+[
+    {
+        "id": "4df43b28.be1c54",
+        "type": "tab",
+        "label": "Tweet Tone",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "5944bea1.ad946",
+        "type": "debug",
+        "z": "4df43b28.be1c54",
+        "name": "msg.tweet details",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "tweet",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 510,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "44fdbb6b.e80d34",
+        "type": "debug",
+        "z": "4df43b28.be1c54",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "tweet.text",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 520,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "bfb05aa7.052ed8",
+        "type": "function",
+        "z": "4df43b28.be1c54",
+        "name": "Remove URLs and Replace #",
+        "func": "// var tweet = msg.tweet.text;\nvar tweet = msg.payload;\nvar newtweet = tweet.replace(/#/g, \" Hash tag \");\n\n// regex from https://stackoverflow.com/questions/1500260/detect-urls-in-text-with-javascript\nmsg.payload = newtweet.replace( /(([a-z]+:\\/\\/)?(([a-z0-9\\-]+\\.)+([a-z]{2}|biz|com|co|edu|gov|info|net|org|ly))(:[0-9]{1,5})?(\\/[a-z0-9_\\-\\.~]+)*(\\/([a-z0-9_\\-\\.]*)(\\?[a-z0-9+_\\-\\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\\s+|$)/gi, \"see short URL \" );\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 450,
+        "y": 320,
+        "wires": [
+            [
+                "9a01acc2.fe5f5",
+                "81a28422.a29168"
+            ]
+        ]
+    },
+    {
+        "id": "9a01acc2.fe5f5",
+        "type": "debug",
+        "z": "4df43b28.be1c54",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 800,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "81a28422.a29168",
+        "type": "watson-tone-analyzer-v3",
+        "z": "4df43b28.be1c54",
+        "name": "Analyze Tone",
+        "tones": "all",
+        "sentences": "true",
+        "contentType": "false",
+        "tone-method": "generalTone",
+        "interface-version": "2016-05-19",
+        "inputlang": "en",
+        "service-endpoint": "https://api.eu-gb.tone-analyzer.watson.cloud.ibm.com/instances/37849354-9225-42ec-b291-62ee28529c4a",
+        "x": 640,
+        "y": 520,
+        "wires": [
+            [
+                "902ab030.cba11",
+                "89be2eb0.1c2b4",
+                "9701cc7e.26d66"
+            ]
+        ]
+    },
+    {
+        "id": "902ab030.cba11",
+        "type": "change",
+        "z": "4df43b28.be1c54",
+        "name": "tone_categories",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "response.document_tone.tone_categories",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1000,
+        "y": 520,
+        "wires": [
+            [
+                "db1f21a5.89578"
+            ]
+        ]
+    },
+    {
+        "id": "89be2eb0.1c2b4",
+        "type": "function",
+        "z": "4df43b28.be1c54",
+        "name": "High Score",
+        "func": "var emotions = [];\nemotions = msg.response.document_tone.tone_categories\n                .filter(function(c){\n                    if (c.category_id == \"emotion_tone\")\n                    {return c; }\n                    })[0].tones;\n\nvar myscore =  0;\nfor (var i=0; i<emotions.length; i++) {\n    if(emotions[i].score > myscore) {\n        msg.payload = emotions[i].score;\n        msg.topic = emotions[i].tone_name;\n        myscore = emotions[i].score;\n    }\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 990,
+        "y": 600,
+        "wires": [
+            [
+                "51b7b97a.babbf8",
+                "27339c8f.b98064"
+            ]
+        ]
+    },
+    {
+        "id": "9701cc7e.26d66",
+        "type": "debug",
+        "z": "4df43b28.be1c54",
+        "name": "Print msg.response",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "response",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1010,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "db1f21a5.89578",
+        "type": "debug",
+        "z": "4df43b28.be1c54",
+        "name": "Tone Categories",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1340,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "51b7b97a.babbf8",
+        "type": "debug",
+        "z": "4df43b28.be1c54",
+        "name": "Score",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "topic",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1310,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "27339c8f.b98064",
+        "type": "switch",
+        "z": "4df43b28.be1c54",
+        "name": "Select Emotions",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "Joy",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Sadness",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Fear",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Anger",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "Disgust",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 5,
+        "x": 1200,
+        "y": 860,
+        "wires": [
+            [
+                "f71b5aff.a44d98"
+            ],
+            [
+                "8461867d.aabf98"
+            ],
+            [
+                "352d768d.79f9aa"
+            ],
+            [
+                "2455132b.0f21cc"
+            ],
+            [
+                "ac99e37c.1682f"
+            ]
+        ]
+    },
+    {
+        "id": "f71b5aff.a44d98",
+        "type": "change",
+        "z": "4df43b28.be1c54",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 700,
+        "wires": [
+            [
+                "acdd7a48.76bf28"
+            ]
+        ]
+    },
+    {
+        "id": "8461867d.aabf98",
+        "type": "change",
+        "z": "4df43b28.be1c54",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 780,
+        "wires": [
+            [
+                "acdd7a48.76bf28"
+            ]
+        ]
+    },
+    {
+        "id": "352d768d.79f9aa",
+        "type": "change",
+        "z": "4df43b28.be1c54",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 860,
+        "wires": [
+            [
+                "acdd7a48.76bf28"
+            ]
+        ]
+    },
+    {
+        "id": "2455132b.0f21cc",
+        "type": "change",
+        "z": "4df43b28.be1c54",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 940,
+        "wires": [
+            [
+                "acdd7a48.76bf28"
+            ]
+        ]
+    },
+    {
+        "id": "ac99e37c.1682f",
+        "type": "change",
+        "z": "4df43b28.be1c54",
+        "name": "",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1520,
+        "y": 1020,
+        "wires": [
+            [
+                "acdd7a48.76bf28"
+            ]
+        ]
+    },
+    {
+        "id": "acdd7a48.76bf28",
+        "type": "template",
+        "z": "4df43b28.be1c54",
+        "name": "Score Tweet",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "This tweet expresses {{topic}} - {{tweet.text}}",
+        "output": "str",
+        "x": 1800,
+        "y": 860,
+        "wires": [
+            [
+                "f639c4b.b5f3438"
+            ]
+        ]
+    },
+    {
+        "id": "f639c4b.b5f3438",
+        "type": "debug",
+        "z": "4df43b28.be1c54",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1860,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "2f1aa337.8b7c2c",
+        "type": "twitter in",
+        "z": "4df43b28.be1c54",
+        "twitter": "",
+        "tags": "",
+        "user": "true",
+        "name": "Listen to twitter feed",
+        "inputs": 1,
+        "x": 150,
+        "y": 160,
+        "wires": [
+            [
+                "5944bea1.ad946",
+                "44fdbb6b.e80d34",
+                "bfb05aa7.052ed8"
+            ]
+        ]
+    },
+    {
+        "id": "cb43f895.9bfc28",
+        "type": "comment",
+        "z": "4df43b28.be1c54",
+        "name": "Pick a #hashtag to follow",
+        "info": "",
+        "x": 160,
+        "y": 120,
+        "wires": []
+    }
+]
