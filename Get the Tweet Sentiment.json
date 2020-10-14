@@ -1,0 +1,207 @@
+[
+    {
+        "id": "65ab239c.8f897c",
+        "type": "tab",
+        "label": "Tweet Sentiment",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "1036bdeb.0c6232",
+        "type": "debug",
+        "z": "65ab239c.8f897c",
+        "name": "msg.tweet details",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "tweet",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 530,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "666c471.49ab9b8",
+        "type": "debug",
+        "z": "65ab239c.8f897c",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "tweet.text",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 540,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "5ab088e6.01bda8",
+        "type": "function",
+        "z": "65ab239c.8f897c",
+        "name": "Remove URLs and Replace #",
+        "func": "// var tweet = msg.tweet.text;\nvar tweet = msg.payload;\nvar newtweet = tweet.replace(/#/g, \" Hash tag \");\n\n// regex from https://stackoverflow.com/questions/1500260/detect-urls-in-text-with-javascript\nmsg.payload = newtweet.replace( /(([a-z]+:\\/\\/)?(([a-z0-9\\-]+\\.)+([a-z]{2}|biz|com|co|edu|gov|info|net|org|ly))(:[0-9]{1,5})?(\\/[a-z0-9_\\-\\.~]+)*(\\/([a-z0-9_\\-\\.]*)(\\?[a-z0-9+_\\-\\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\\s+|$)/gi, \"see short URL \" );\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 470,
+        "y": 360,
+        "wires": [
+            [
+                "a25177fd.6bd8a8",
+                "574cc871.5d1238"
+            ]
+        ]
+    },
+    {
+        "id": "a25177fd.6bd8a8",
+        "type": "debug",
+        "z": "65ab239c.8f897c",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "574cc871.5d1238",
+        "type": "sentiment",
+        "z": "65ab239c.8f897c",
+        "name": "Sentiment of Tweets",
+        "property": "payload",
+        "x": 550,
+        "y": 520,
+        "wires": [
+            [
+                "b708d43c.713bf8",
+                "1bb5c945.204407"
+            ]
+        ]
+    },
+    {
+        "id": "b708d43c.713bf8",
+        "type": "switch",
+        "z": "65ab239c.8f897c",
+        "name": "Positive / Negative Tweet",
+        "property": "sentiment.score",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "gte",
+                "v": "2",
+                "vt": "num"
+            },
+            {
+                "t": "lt",
+                "v": "0",
+                "vt": "num"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 2,
+        "x": 850,
+        "y": 520,
+        "wires": [
+            [
+                "b757c839.222d38"
+            ],
+            [
+                "a2a55304.4d9c4"
+            ]
+        ]
+    },
+    {
+        "id": "1bb5c945.204407",
+        "type": "debug",
+        "z": "65ab239c.8f897c",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "sentiment.score",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 840,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "a2a55304.4d9c4",
+        "type": "debug",
+        "z": "65ab239c.8f897c",
+        "name": "Negative Tweet",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1160,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "b757c839.222d38",
+        "type": "debug",
+        "z": "65ab239c.8f897c",
+        "name": "Positive Tweet",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1160,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "e0937718.73abf8",
+        "type": "twitter in",
+        "z": "65ab239c.8f897c",
+        "twitter": "",
+        "tags": "",
+        "user": "true",
+        "name": "Listen to twitter feed",
+        "inputs": 1,
+        "x": 130,
+        "y": 200,
+        "wires": [
+            [
+                "1036bdeb.0c6232",
+                "666c471.49ab9b8",
+                "5ab088e6.01bda8"
+            ]
+        ]
+    },
+    {
+        "id": "cc184338.3d3d1",
+        "type": "comment",
+        "z": "65ab239c.8f897c",
+        "name": "Pick a #hashtag to follow",
+        "info": "",
+        "x": 140,
+        "y": 160,
+        "wires": []
+    }
+]
