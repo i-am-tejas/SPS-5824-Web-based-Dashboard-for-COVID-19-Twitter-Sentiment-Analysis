@@ -1,1 +1,107 @@
-[{"id":"88ca72b8.6a5d4","type":"function","z":"20145959.7c27e6","name":"Remove URLs and Replace #","func":"// var tweet = msg.tweet.text;\nvar tweet = msg.payload;\nvar newtweet = tweet.replace(/#/g, \" Hash tag \");\n\n// regex from https://stackoverflow.com/questions/1500260/detect-urls-in-text-with-javascript\nmsg.payload = newtweet.replace( /(([a-z]+:\\/\\/)?(([a-z0-9\\-]+\\.)+([a-z]{2}|biz|com|co|edu|gov|info|net|org|ly))(:[0-9]{1,5})?(\\/[a-z0-9_\\-\\.~]+)*(\\/([a-z0-9_\\-\\.]*)(\\?[a-z0-9+_\\-\\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\\s+|$)/gi, \"see short URL \" );\nreturn msg;","outputs":1,"noerr":0,"initialize":"","finalize":"","x":530,"y":340,"wires":[["2e3b6fbf.b602f"]]}]
+[
+    {
+        "id": "20145959.7c27e6",
+        "type": "tab",
+        "label": "Tweet Simple",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "cba55e8f.944ce",
+        "type": "debug",
+        "z": "20145959.7c27e6",
+        "name": "msg.tweet details",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "tweet",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 590,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "a21bc0ed.9a816",
+        "type": "debug",
+        "z": "20145959.7c27e6",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "tweet.text",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "88ca72b8.6a5d4",
+        "type": "function",
+        "z": "20145959.7c27e6",
+        "name": "Remove URLs and Replace #",
+        "func": "// var tweet = msg.tweet.text;\nvar tweet = msg.payload;\nvar newtweet = tweet.replace(/#/g, \" Hash tag \");\n\n// regex from https://stackoverflow.com/questions/1500260/detect-urls-in-text-with-javascript\nmsg.payload = newtweet.replace( /(([a-z]+:\\/\\/)?(([a-z0-9\\-]+\\.)+([a-z]{2}|biz|com|co|edu|gov|info|net|org|ly))(:[0-9]{1,5})?(\\/[a-z0-9_\\-\\.~]+)*(\\/([a-z0-9_\\-\\.]*)(\\?[a-z0-9+_\\-\\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\\s+|$)/gi, \"see short URL \" );\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 530,
+        "y": 340,
+        "wires": [
+            [
+                "2e3b6fbf.b602f"
+            ]
+        ]
+    },
+    {
+        "id": "2e3b6fbf.b602f",
+        "type": "debug",
+        "z": "20145959.7c27e6",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "63c86604.da8248",
+        "type": "twitter in",
+        "z": "20145959.7c27e6",
+        "twitter": "",
+        "tags": "",
+        "user": "true",
+        "name": "Listen to twitter feed",
+        "inputs": 1,
+        "x": 150,
+        "y": 160,
+        "wires": [
+            [
+                "cba55e8f.944ce",
+                "a21bc0ed.9a816",
+                "88ca72b8.6a5d4"
+            ]
+        ]
+    },
+    {
+        "id": "4cafe15f.902dd",
+        "type": "comment",
+        "z": "20145959.7c27e6",
+        "name": "Pick a #hashtag to follow",
+        "info": "",
+        "x": 160,
+        "y": 120,
+        "wires": []
+    }
+]
