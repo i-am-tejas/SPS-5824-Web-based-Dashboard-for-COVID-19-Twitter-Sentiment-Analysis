@@ -17,7 +17,7 @@ state if the lockdown is extended.
 
 The project mainly focuses on people’s sentiment towards the pandemic, understands the sentiments of people on government’s decisions to extend the lockdown and possibility to predict riots against the government. 
 
-In this Project, our server application subscribes to a Twitter feed as configured by the user. Each tweet received will be analyzed for emotional tone and sentiment, all data is stored in a Cloudant database, with the opportunity to store historical data as well. The resulting analysis is presented in a Node-Red based Web UI as a series of graphs and charts
+In this Project, the server application subscribes to a Twitter feed as configured by the user. Each tweet received will be analyzed for emotional tone and sentiment, all data is stored in a Cloudant database, with the opportunity to store historical data as well. The resulting analysis is presented in a Node-Red based Web UI as a series of graphs and charts
 
 1. Tweets are pushed out by Twitter based on Hashtag.
 
